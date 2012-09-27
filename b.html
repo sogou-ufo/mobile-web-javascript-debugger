@@ -1,0 +1,153 @@
+<!doctype>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>调试会话</title>
+    <style>
+        body,div,p,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,select,input,textarea,blockquote,table,th,td{margin:0;padding:0;}
+        body {background:#FFF;}
+        body,td,th {font-family: Arial, Verdana, Helvetica, sans-serif;font-size:12px;color:#333;line-height:20px;}
+        a:link,a:visited {text-decoration:none;color:#369;}
+        a:active,a:hover {text-decoration:none;background-color:#039;color:#FFF;}
+        img {border:0;}
+        ::selection {color:#FFF;background:#039;}
+        ::-moz-selection{color:#FFF;background:#039;}
+        a,area {blr:expression(this.onFocus=this.blur())} /* for IE */
+        :focus {-moz-outline-style:none;outline:none;} /* for Firefox */
+        #chatlist {
+            border:1px solid #ddd;
+            font-size:13px;
+            background:#eee;
+            border-radius:5px;    
+            min-height:20px;
+        }
+        #chatlist li{
+            border-bottom: 1px solid #ddd;
+            padding-bottom:10px;
+        }
+        #chatlist li.hide{
+            padding:0;    
+        }
+        #chatlist div.chat-head{
+            color:#fff;
+            background:#E78F08;
+            font-size:14px;
+            font-weight:bold;
+            height:30px;
+            line-height:30px;    
+        }
+        span.clear-log{
+            float:right;    
+            font-size:14px;
+            font-weight:bold;
+            height:30px;
+            color:#fff;
+            display:inline;
+            margin-right:10px;
+            cursor:pointer;
+            line-height:30px;    
+        }
+        #chatlist div{
+            padding:0 10px;    
+        }
+        #chatlist .hide div.chat-head {
+            display:block;    
+        }
+        #chatlist .hide div{
+            display:none;    
+        }
+        .item {
+            margin-right:12px;    
+        }
+        div.error {
+            color:red;    
+        }
+        div.log{
+            color:#060; 
+        }
+        div.system{
+            color:#f90; 
+        }
+    </style>
+</head>
+<body>
+<div id="common">
+</div>
+<ul id="chatlist">
+    
+</ul>
+<script src="http://ufo.sogou-inc.com:8088/socket.io/socket.io.js"></script>
+<script>
+    var cache = {};
+    function g(id) {
+        return document.getElementById(id);  
+    };
+    function clearlog(id){
+        var t = g(id);
+        if(t) {
+            t.innerHTML = cache[id]; 
+        }
+    };
+    function toggle(id) {
+        if(g(id).className == 'hide'){
+            g(id).className = '';
+        }else{
+            g(id).className = 'hide';
+        }
+    };
+    /**
+      * 显示日志逻辑
+      * */ 
+    function viewLog(data) {
+        var tk = data.token,id;
+        if(tk) {
+            id = 'chat' + tk;
+            var chat = g(id); 
+            !chat && (function(){
+                chat = document.createElement('li');
+                //chat.className = 'hide';
+                var h = '<span class="clear-log" onclick="clearlog(\'' + id + '\')">清空日志</span>' +
+                '<div class="chat-head" onclick="toggle(\'' + id + '\')">会话: ' + tk + 
+                '</div>';
+                cache[id] = h;
+                chat.innerHTML = h; 
+                chat.id = id;
+                g('chatlist').appendChild(chat);
+            })();
+            if(chat.className != 'hide') {
+                var div = document.createElement('div');   
+                div.className = data.type;
+                var html = '';
+                for(var i in data) {
+                    if(i != 'token') {
+                        html += '<span class="item"><b>' + i + ': </b>' + data[i] + '</span>';   
+                    }
+                }
+                div.innerHTML = html;
+                chat.appendChild(div);
+            }
+        }
+    };
+    // 和sever建立会话 
+    var chat = io.connect('http://ufo.sogou-inc.com:8088/view');
+    chat.on('connect', function() {
+        viewLog({
+           type: 'log',
+           message: '调试链接B-S已经建立' 
+        }); 
+    });
+    chat.on('msg', viewLog);
+    /**
+      * 向token所指定的会话发送并执行命令，注意cmd会在mobile会话端window作用域下执行
+      * */
+    function send(token, cmd){
+        if(token && cmd.split){
+            chat.emit('msg', {
+                token: token,
+                cmd: cmd    
+            })    
+        }    
+    };
+</script>
+</body>
+</html>

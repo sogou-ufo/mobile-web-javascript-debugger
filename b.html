@@ -76,7 +76,7 @@
 <ul id="chatlist">
     
 </ul>
-<script src="http://ufo.sogou-inc.com:8088/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script>
     var cache = {};
     function g(id) {
@@ -129,7 +129,7 @@
         }
     };
     // 和sever建立会话 
-    var chat = io.connect('http://ufo.sogou-inc.com:8088/view');
+    var chat = io.connect('/view');
     chat.on('connect', function() {
         viewLog({
            type: 'log',

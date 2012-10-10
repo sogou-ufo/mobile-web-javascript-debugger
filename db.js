@@ -25,8 +25,22 @@ function build(fileName) {
         });
         // 替换断点
         content = content.replace(/(\/\*\*)(umbp\([^\)]*\))[^*]*(\*\*\/)/g, bp);
+        // html file
+        if(content.indexOf('<!--umdebug-->') != -1) {
+            content = content.replace(/<!--umdebug-->/g, dbhtml);
+            // 对内联js进行打包
+            content = content.replace(/<script[^>]*[^<]*<\/script>/g, function(str) {
+                var bg = str.split('>');
+                if(bg[0].indexOf(' src=') != -1)return str; 
+                var bh = bg[0];
+                bg = bg.slice(1);
+                return bh + '>try{' + bg.join('>').replace(/<\/script>$/g, '') + '}catch(e){window.umerror(e)};</script>' 
+            });
+        } else {
+        // js file，许多手机浏览器遇到错误会终止执行，因此需要用try catch对代码进行打包
+            content = 'try{' + content + '}catch(e){window.umerror(e)};'
+        }
         // 替换文件引入
-        content = content.replace(/<!--umdebug-->/g, dbhtml);
         fs.writeFileSync(fileName, content, 'UTF8'); 
     }
 };

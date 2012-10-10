@@ -20,7 +20,9 @@ function build(fileName) {
     var content = fs.readFileSync(fileName, 'UTF8');   
     if(content.indexOf('/**umlog(') != -1 || content.indexOf('/**umbp(') != -1 || content.indexOf('<!--umdebug-->') != -1) {
         // 替换日志
-        content = content.replace(/(\/\*\*)(umlog\([^\)]*\))[^*]*(\*\*\/)/g,'$2;');
+        content = content.replace(/(\/\*\*)(umlog\([^\)]*\))[^*]*(\*\*\/)/g,function(str) {
+            return str.replace(/(^\/\*\*)umlog\(([^\)]*)\)[^*]*/g, 'umlog("$2 is: " + ($2))').replace(/([;]?\*\*\/$)/g, ';')    
+        });
         // 替换断点
         content = content.replace(/(\/\*\*)(umbp\([^\)]*\))[^*]*(\*\*\/)/g, bp);
         // 替换文件引入

@@ -1,4 +1,5 @@
+var name = 'ni shi 2b';
 /**umlog('nihao')**/
-/**umbp();**/
-/**umlog('nihao');**/
+/**umlog(name);**/
 /**umbp()**/
+/**umlog(name);**/

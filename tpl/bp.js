@@ -1,27 +1,27 @@
 (function() {
-    var e, tmp = prompt('请输入指令：') || '', cmd; 
-    if(tmp = tmp.trim()) {
-        if(tmp.indexOf('@') != -1) {
-            if((tmp = tmp.replace(/^@/g,'')) && (cmd = window.ucmd[tmp])) {
+    var u__e, u__tmp = prompt('请输入指令：') || '', u__cmd; 
+    if(u__tmp = u__tmp.trim()) {
+        if(u__tmp.indexOf('@') != -1) {
+            if((u__tmp = u__tmp.replace(/^@/g,'')) && (u__cmd = window.ucmd[u__tmp])) {
             } else {
-                e ={
+                u__e ={
                     type: 'error',
-                    message: tmp + ' is not found in ucmd' 
+                    message: u__tmp + ' is not found in ucmd' 
                 };     
             }
         } else {
-            cmd = tmp;    
+            u__cmd = u__tmp;    
         }
         try {
-            if(cmd.split) {
-                eval(cmd);    
+            if(u__cmd.split) {
+                eval(u__cmd);    
             } else {
-                cmd && cmd();    
+                u__cmd && u__cmd();    
             }
-            window.umlog(cmd + '执行成功');
+            window.umlog(u__cmd + '执行成功');
         }catch(e) {
-            var e = e;
+            var u__e = e;
         } 
-        e && (e.cmd = cmd || tmp) && (e.input = tmp) && window.umerror(e);
+        u__e && (u__e.cmd = u__cmd || u__tmp) && (u__e.input = u__tmp) && window.umerror(u__e);
     }
 })();

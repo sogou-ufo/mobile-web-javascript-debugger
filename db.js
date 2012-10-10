@@ -27,7 +27,6 @@ function build(fileName) {
         content = content.replace(/(\/\*\*)(umbp\([^\)]*\))[^*]*(\*\*\/)/g, bp);
         // html file
         if(content.indexOf('<!--umdebug-->') != -1) {
-            content = content.replace(/<!--umdebug-->/g, dbhtml);
             // 对内联js进行打包
             content = content.replace(/<script[^>]*[^<]*<\/script>/g, function(str) {
                 var bg = str.split('>');
@@ -36,6 +35,7 @@ function build(fileName) {
                 bg = bg.slice(1);
                 return bh + '>try{' + bg.join('>').replace(/<\/script>$/g, '') + '}catch(e){window.umerror(e)};</script>' 
             });
+            content = content.replace(/<!--umdebug-->/g, dbhtml);
         } else {
         // js file，许多手机浏览器遇到错误会终止执行，因此需要用try catch对代码进行打包
             content = 'try{' + content + '}catch(e){window.umerror(e)};'
